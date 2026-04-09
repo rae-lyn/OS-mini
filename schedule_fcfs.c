@@ -54,7 +54,7 @@ void add(char *name, int arrivalTime, int burst) {
  *   2. if more than one share arrivalTime - pick the next task alphabetically
  * --------------------------------------------------------------- */
 Task *selectNextTask() {
-    //initialized pointer 'temp' to travel through all
+    //initialized pointer 'ptr' to travel through all
     struct node *ptr = head;
     //assume the first node is the best
     Task *best = head->task;
