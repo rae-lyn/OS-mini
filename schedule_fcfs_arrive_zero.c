@@ -5,14 +5,14 @@
  *      All tasks arrive at time 0, so the CPU is never idle.
  *      Tasks are ordered purely by name (T1 before T2, etc.)
  * Q2 - Print process metrics table:
- *        - Turnaround Time  = finish_time - arrival_time
- *        - Waiting Time     = start_time  - arrival_time
- *        - Response Time    = start_time  - arrival_time
+ *        - Turnaround Time  = completion time - arrival time
+ *        - Waiting Time     = turnaround time - burst time
+ *        - Response Time    = first CPU time  - arrival time
  *        - Response Ratio   = (waiting + burst) / burst
  * Q3 - Print average metrics:
  *        - Average Turnaround Time
  *        - Average Waiting Time
- *        - Throughput = tasks / total elapsed time
+ *        - Throughput = tasks / completion time
  */
 
 #include <stdlib.h>
@@ -62,8 +62,8 @@ Task *selectNextTask() {
         //helps avoid writing ptr->task->arrivalTime 
         Task *t = ptr->task;
 
-	//since all tasks arrival time is 0:
-	//pick the task that comes first alphabetically
+        //since all tasks arrival time is 0:
+        //pick the task that comes first alphabetically
         if (strcmp(t->name, best->name) < 0) {
             best = t;
             //otherwise best remains same and checks next node
@@ -89,8 +89,8 @@ void schedule() {
     int n = 0;
     struct node *tmp = head;
     while (tmp != NULL) {
-    	n++; 
-    	tmp = tmp->next; 
+        n++; 
+        tmp = tmp->next; 
     }
 
     // arrays to store metrics in execution order
@@ -99,36 +99,36 @@ void schedule() {
     int   *burst_arr   = malloc(n * sizeof(int));
     int   *start_time  = malloc(n * sizeof(int));
     int   *finish_time = malloc(n * sizeof(int));
-    int   *turnaround  = malloc(n * sizeof(int)); //finish - arrival
-    int   *waiting     = malloc(n * sizeof(int)); //start - arrival
-    int   *response    = malloc(n * sizeof(int)); //start - arrival
+    int   *turnaround  = malloc(n * sizeof(int)); //completion - arrival
+    int   *waiting     = malloc(n * sizeof(int)); //turnaround - burst
+    int   *response    = malloc(n * sizeof(int)); //first CPU time - arrival
     float *resp_ratio  = malloc(n * sizeof(float)); // (waiting + burst) / burst
 
-    int current_time = 0; //simulated a clock
+    int current_time = 0; //simulated clock
     int idx = 0; //metric array index
 
-    //main scheduling loop - runs 
+    //main scheduling loop
     while (head != NULL) {
-    	//gets nect task from selectNextTask
+        //gets next task from selectNextTask
         Task *current = selectNextTask();
 
-	//task starts (no idle time since all tasks arrive at 0)
+        //task starts (no idle time since all tasks arrive at 0)
         int t_start  = current_time;
         //task finishes after running its full burst duration
         int t_finish = current_time + current->burst;
- 
- 	//simulate running task on CPU
+
+        //simulate running task on CPU
         run(current, current->burst);
- 	//simulated clock moved to when task finished
+        //simulated clock moved to when task finished
         current_time = t_finish;
 
         //compute metrics
         int   ta = t_finish - current->arrivalTime; //turnaround = completion - arrival
-        int   wt = t_start  - current->arrivalTime; //waiting = turnaround - burst
+        int   wt = ta - current->burst; //waiting = turnaround - burst
         int   rt = t_start  - current->arrivalTime; //response = first CPU time - arrival
         float rr = (float)(wt + current->burst) / current->burst; //resp ratio = (wait + burst) / burst
- 
- 	//store all metrics for this task at position idx
+
+        //store all metrics for this task at position idx
         names[idx]       = current->name;
         arrival[idx]     = current->arrivalTime;
         burst_arr[idx]   = current->burst;
@@ -139,12 +139,12 @@ void schedule() {
         response[idx]    = rt;
         resp_ratio[idx]  = rr;
         idx++;
- 	
- 	//remove this task from the linked list now that its done
+
+        //remove this task from the linked list now that its done
         delete(&head, current);
     }
 
-    //===Q2: Per-Process Metrics Table ===
+    //=== Q2: Per-Process Metrics Table ===
     printf("\n=== Q2: Per-Process Metrics ===\n");
     //print headers of column
     printf("%-6s %8s %6s %8s %10s %12s %10s %10s %14s\n",
@@ -156,7 +156,7 @@ void schedule() {
            "------------","--------","--------","--------------");
     //accumulators for computing averages in Q3
     long total_ta = 0, total_wt = 0;
-    
+
     //print one row per task and add to running totals
     for (int i = 0; i < n; i++) {
         printf("%-6s %8d %6d %8d %10d %12d %10d %10d %14.4f\n",
@@ -167,20 +167,19 @@ void schedule() {
         total_wt += waiting[i];
     }
 
-    //===Q3: Average / Summary Metrics ===
-    double avg_ta    = (double)total_ta / n; //avg turnaround = total_ta / n
-    double avg_wt    = (double)total_wt / n; //avg waiting = total_wt / n
-    int    span      = finish_time[n-1] - arrival[0]; // throughput = n / completion time
-    double throughput = (double)n / span;
+    //=== Q3: Average / Summary Metrics ===
+    double avg_ta = (double)total_ta / n; //avg turnaround = total_ta / n
+    double avg_wt = (double)total_wt / n; //avg waiting = total_wt / n
+    double throughput = (double)n / finish_time[n-1]; //throughput = n / completion time
 
     printf("\n=== Q3: Average / Summary Metrics ===\n");
     printf("%-30s %10.4f\n", "Average Turnaround Time:", avg_ta);
     printf("%-30s %10.4f\n", "Average Waiting Time:",   avg_wt);
     printf("%-30s %10.6f  (tasks/time unit)\n", "Throughput:", throughput);
 
-    ////free every array we allocated with malloc to avoid memory leaks
-    free(names);  free(arrival);    free(burst_arr);
+    //free every array we allocated with malloc to avoid memory leaks
+    free(names); free(arrival); free(burst_arr);
     free(start_time); free(finish_time);
     free(turnaround); free(waiting);
-    free(response);   free(resp_ratio);
+    free(response); free(resp_ratio);
 }
