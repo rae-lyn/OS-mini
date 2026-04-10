@@ -1,6 +1,6 @@
 /*
  * Implementation of FCFS scheduling algorithm.
- * Team Member 1: Diana Gonzalez
+ * Team Member 2: Raelyn Nelson
  * Q1 - Run tasks in FCFS order using schedule_arrive_zero.txt
  *      All tasks arrive at time 0, so the CPU is never idle.
  *      Tasks are ordered purely by name (T1 before T2, etc.)
