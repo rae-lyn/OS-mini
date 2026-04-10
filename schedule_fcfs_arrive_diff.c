@@ -178,7 +178,7 @@ void schedule() {
     //=== Q3: Average / Summary Metrics ===
     double avg_ta = (double)total_ta / n; //avg turnaround = total_ta / n
     double avg_wt = (double)total_wt / n; //avg waiting = total_wt / n
-    double throughput = (double)n / finish_time[n-1]; //throughput = n / completion time
+    double throughput = (double)n / (finish_time[n-1] - first_arrival); //throughput = n / completion time
 
     printf("\n=== Q3: Average / Summary Metrics ===\n");
     printf("%-30s %10.4f\n", "Average Turnaround Time:", avg_ta);
