@@ -76,3 +76,21 @@ Task *selectNextTask() {
     }
     return best;
 }
+
+if (current == NULL) {
+    // No task has arrived yet — the CPU is idle.
+    // Find the earliest arrivalTime still in the list and
+    // jump the clock forward to that moment.
+    struct node *ptr  = head;
+    int earliest = ptr->task->arrivalTime;
+
+    while (ptr != NULL) {
+        if (ptr->task->arrivalTime < earliest) {
+            earliest = ptr->task->arrivalTime;
+        }
+        ptr = ptr->next;
+    }
+    // Jump the clock to when the next task arrives
+    current_time = earliest;
+    continue;  // loop back and try selectNextTask() again
+}
