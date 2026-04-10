@@ -48,7 +48,7 @@ void add(char *name, int arrivalTime, int burst) {
 
 /* ---------------------------------------------------------------
  * FCFS algorithm:
- *   1. pick the task with the SMALLEST arrivalTime (all are 0 so no arrival filtering)
+ *   1. pick the task with the SMALLEST arrivalTime
  *   2. if more than one share arrivalTime - pick the next task alphabetically
  * --------------------------------------------------------------- */
 Task *selectNextTask(int current_time) {
