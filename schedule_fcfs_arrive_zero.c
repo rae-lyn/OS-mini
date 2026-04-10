@@ -68,7 +68,7 @@ Task *selectNextTask() {
             best = t;
             //otherwise best remains same and checks next node
         }
-        ptr = ptr->next;
+        ptr = ptr->next; //move to next node
     }
     return best;
 }
