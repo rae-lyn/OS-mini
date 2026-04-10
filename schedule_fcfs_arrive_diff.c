@@ -51,10 +51,10 @@ void add(char *name, int arrivalTime, int burst) {
  *   1. pick the task with the SMALLEST arrivalTime (all are 0 so no arrival filtering)
  *   2. if more than one share arrivalTime - pick the next task alphabetically
  * --------------------------------------------------------------- */
-Task *selectNextTask() {
+Task *selectNextTask(int current_time) {
     //initialized pointer 'ptr' to travel through all
-    struct node *ptr = head;
-    //assume the first node is the best
+    struct node *ptr  = head;
+	//best candidate found so far
     Task *best = head->task;
     
     //keeps checking under there are no more nodes to check
@@ -62,15 +62,20 @@ Task *selectNextTask() {
         //helps avoid writing ptr->task->arrivalTime 
         Task *t = ptr->task;
 
-	//checks if different t->arrivalTime is smaller than best
-        if (t->arrivalTime < best->arrivalTime ||
-            //if same arrivalTime, best is the task that comes alphabetically first
-            (t->arrivalTime == best->arrivalTime &&
-             strcmp(t->name, best->name) < 0)) {
-            best = t;
-            //otherwise best remains same and checks next node
+		//only consider this task if it has already arrived
+        if (t->arrivalTime <= current_time) {
+            if (t->arrivalTime < best->arrivalTime) {
+                //this task arrived earlier than our current best — prefer it
+                best = t;
+            }
+            else if (t->arrivalTime == best->arrivalTime &&
+                     strcmp(t->name, best->name) < 0) {
+                //ame arrival time — pick whichever name comes first alphabetically
+                //strcmp returns negative if t->name comes before best->name
+                best = t;
+            }
         }
-        ptr = ptr->next;
+        ptr = ptr->next; //move to next node
     }
     return best;
 }
@@ -112,14 +117,31 @@ void schedule() {
     //main scheduling loop
     while (head != NULL) {
         //gets next task from selectNextTask
-        Task *current = selectNextTask();
+        Task *current = selectNextTask(current_time);
 
-        /*
-          +===========================================
-          your idle cpu code here
-          =====================================
-        */
-      
+        if (current == NULL) {
+    		// No task has arrived yet — the CPU is idle.
+    		// Find the earliest arrivalTime still in the list and
+    		// jump the clock forward to that moment.
+    		struct node *ptr  = head;
+    		int earliest = ptr->task->arrivalTime;
+
+    		while (ptr != NULL) {
+        		if (ptr->task->arrivalTime < earliest) {
+            		earliest = ptr->task->arrivalTime;
+        		}
+        		ptr = ptr->next;
+    		}
+    		// Jump the clock to when the next task arrives
+    		current_time = earliest;
+    		continue;  // loop back and try selectNextTask() again
+		}
+
+		// Record the first task's arrival time for throughput calculation
+        if (first_arrival == -1) {
+            first_arrival = current->arrivalTime;
+        }
+		
         //task starts (no idle time since all tasks arrive at 0)
         int t_start  = current_time;
         //task finishes after running its full burst duration
