@@ -1,4 +1,7 @@
 // yrrd.c - Word Frequency Utility
+// When trying to run follow the steps:
+// 1. type: make yrrd
+// 2. type: ./yrrd <file> - replace the file with the name of the file you want to run ex: Makefile
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
