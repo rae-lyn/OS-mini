@@ -60,7 +60,7 @@ void print_help() {
     printf("Options:\n");
     printf("  <file>          The path to the text file.\n");
     printf("  -w <words>      Specify words to count.\n");
-    printf("  -help           The -help flag prints all available options and correct usage syntax directly in the terminal, which\n);
+    printf("  -help           The -help flag prints all available options and correct usage syntax directly in the terminal, which\n");
     printf("                  allows for an easy reference without leaving the command line​.\n");
 }
 
