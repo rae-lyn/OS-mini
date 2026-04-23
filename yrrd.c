@@ -69,24 +69,33 @@ void print_help() {
 }
 
 void run_worker(int argc, char *argv[]) {
+    // argv[2] is the filename; subsequent arguments are the words to filter
     char *filename = argv[2];
+
+    //Open the file using system call 'open'
     int fd = open(filename, O_RDONLY);
     if (fd < 0) {
         fprintf(stderr, "Error: Could not open file %s\n", filename);
         exit(1);
     }
-    
+
+    // Get file size using system call 'fstat'
     struct stat st;
     fstat(fd, &st);
-    
+
+    // Map the file into memory using 'mmap' for efficient reading
     char *mapped = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+
+    // Create a mutable copy of the file content for tokenization
     char *text = strdup(mapped);
     char *word = strtok(text, " \n\t.,");
     
     int found_any = 0; // Flag to track if any matches are found
     
     while (word != NULL) {
-        int should_count = (argc <= 3); 
+        // If argc <= 3, no target words provided; count everything
+        int should_count = (argc <= 3);
+        // Otherwise, check if current word exists in the provided target list
         for (int i = 3; i < argc; i++) {
             if (strcmp(argv[i], word) == 0) {
                 should_count = 1;
