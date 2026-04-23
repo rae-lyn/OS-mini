@@ -61,11 +61,12 @@ void increment_word(char *word) {
 
 // Displays program usage documentation
 void print_help() {
-    printf("Usage: ./yrrd <file> [-w word1 word2 ...]\n\n");
+    printf("Usage: yrrd <file> [-w word1 word2 word3]\n\n");
     printf("Options:\n");
     printf("  <file>          The path to the text file.\n");
     printf("  -w <words>      Specify words to count.\n");
-    printf("  -help           Display this documentation.\n");
+    printf("  -help           The -help flag prints all available options and correct usage syntax directly in the terminal, which
+                              allows for an easy reference without leaving the command line​.\n");
 }
 
 void run_worker(int argc, char *argv[]) {
