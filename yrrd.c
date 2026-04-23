@@ -34,13 +34,14 @@ void free_table() {
         }
     }
 }
-
+// Hash algorithm to distribute words across the has table
 unsigned int hash(char *str) {
     unsigned int h = 0;
     while (*str) h = (h << 5) + *str++;
     return h % HASH_SIZE;
 }
 
+// Adds a word to the hash table or increments its count if it already exists
 void increment_word(char *word) {
     unsigned int index = hash(word);
     Node *entry = hash_table[index];
