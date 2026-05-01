@@ -1,0 +1,79 @@
+.TH YRRD 1 "May 2026" "1.0" "User Commands"
+.SH NAME
+yrrd \- word frequency utility
+.SH SYNOPSIS
+.B yrrd
+.I file
+.RB [ \-w
+.IR word1
+.RI [ word2
+.IR word3 ...]]
+.br
+.B yrrd
+.B \-help
+.SH DESCRIPTION
+.B yrrd
+reads a text file and counts word frequencies. Results are written to
+.I results.txt
+and printed to standard output.
+.PP
+A worker subprocess is forked via
+.BR execl (3)
+to handle file mapping and counting, keeping the parent process clean for output display.
+.SH OPTIONS
+.TP
+.I file
+Path to the input text file. Required unless
+.B \-help
+is specified.
+.TP
+.BI \-w " word1 " [ word2 " " word3 ]
+Count only the specified words (up to 3). If omitted, all words are counted.
+.TP
+.B \-help
+Print usage information and exit.
+.SH OUTPUT
+Results are displayed as a two-column table:
+.PP
+.nf
+COUNT      WORD
+--------------------
+42         the
+17         quick
+.fi
+.PP
+Results are also written to
+.I results.txt
+in the current directory.
+.SH EXAMPLES
+Count all words in a file:
+.PP
+.nf
+    yrrd document.txt
+.fi
+.PP
+Count only specific words:
+.PP
+.nf
+    yrrd document.txt \-w hello world
+.fi
+.SH LIMITATIONS
+Only supports up to 3 target words with
+.BR \-w .
+The results file
+.I results.txt
+is always written to the current working directory.
+Hash table size is fixed at 1024 buckets.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+File not found, unsupported argument count, or other error.
+.SH SEE ALSO
+.BR wc (1),
+.BR grep (1),
+.BR sort (1)
+.SH AUTHOR
+Written by the yrrd project.
