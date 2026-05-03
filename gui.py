@@ -60,7 +60,7 @@ browse_btn = tk.Button(frame, text="Browse", command=browse_file)
 browse_btn.pack(side=tk.LEFT)
 
 # Word filtering (-w flag)
-tk.Label(root, text="Step 2: Words to Count (Optional, space-separated)", **label_style).pack(pady=(20, 5))
+tk.Label(root, text="Optional: Specify Words (space separated)", **label_style).pack(pady=(20, 5))
 words_entry = tk.Entry(root, width=52)
 words_entry.pack(pady=5)
 
